@@ -60,7 +60,7 @@ card-validator/
 │   ├── test/                   # Unit tests for services
 │   │   └── cardValidation.service.test.ts
 │   ├── .gitignore
-│   ├── .env                    # Local env vars (currently unused by runtime wiring)
+│   ├── .env                    # Local env vars (e.g. PORT)
 │   ├── jest.config.js          # Jest configuration
 │   ├── package.json
 │   ├── package-lock.json
@@ -100,7 +100,7 @@ npm run dev
 
 The server will start on `http://localhost:3000`.
 
-Note: `app/.env` and `src/config/env.ts` exist, but the current server startup (`src/index.ts`) uses a hard-coded `PORT = 3000` and does not read from `process.env`.
+Note: the server port is read from `PORT` (via `dotenv`); if not set, it defaults to `3000`.
 
 To build and run the compiled JavaScript:
 
