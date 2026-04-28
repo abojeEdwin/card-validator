@@ -43,12 +43,16 @@ card-validator/
 │   ├── src/
 │   │   ├── controller/         # Handles HTTP requests and responses
 │   │   │   └── card.controller.ts
-│   │   ├── middleware/         # Global error handling and 404 middleware
+│   │   ├── config/             # Environment/config helpers
+│   │   │   └── env.ts
+│   │   ├── data/
+│   │   │   └── schemas/        # Joi validation schemas for request bodies
+│   │   │       └── card.schema.ts
+│   │   ├── middleware/         # Request validation, 404, and global error handling
 │   │   │   └── error.middleware.ts
+│   │   │   └── validation.middleware.ts
 │   │   ├── route/              # Defines API routes
 │   │   │   └── card.route.ts
-│   │   ├── schemas/            # Joi validation schemas for request bodies
-│   │   │   └── card.schema.ts
 │   │   ├── service/            # Core business logic (CardValidationService)
 │   │   │   └── cardValidation.service.ts
 │   │   ├── app.ts              # Express application setup
@@ -56,13 +60,15 @@ card-validator/
 │   ├── test/                   # Unit tests for services
 │   │   └── cardValidation.service.test.ts
 │   ├── .gitignore
+│   ├── .env                    # Local env vars (currently unused by runtime wiring)
 │   ├── jest.config.js          # Jest configuration
 │   ├── package.json
 │   ├── package-lock.json
 │   └── tsconfig.json           # TypeScript configuration for the app
 ├── .git/
 ├── README.md                   # Project documentation
-└── tsconfig.json               # Root TypeScript configuration (extends app/tsconfig.json)
+├── package.json                # Root workspace deps (minimal)
+└── tsconfig.json               # Root TypeScript configuration (includes app/src and app/test)
 ```
 
 ## Getting Started
@@ -94,6 +100,8 @@ npm run dev
 
 The server will start on `http://localhost:3000`.
 
+Note: `app/.env` and `src/config/env.ts` exist, but the current server startup (`src/index.ts`) uses a hard-coded `PORT = 3000` and does not read from `process.env`.
+
 To build and run the compiled JavaScript:
 
 ```bash
@@ -117,14 +125,14 @@ npm run test:watch
 
 ## API Endpoint
 
-### `POST /api/v1/cards/validate`
+### `POST /api/v1/validateCard/validate`
 
 Validates a credit card number and returns its validity status, normalized number, card type, and any specific validation details.
 
 #### Request
 
 -   **Method:** `POST`
--   **URL:** `http://localhost:3000/api/v1/cards/validate`
+-   **URL:** `http://localhost:3000/api/v1/validateCard/validate`
 -   **Headers:**
     -   `Content-Type: application/json`
 -   **Body:**
@@ -201,7 +209,7 @@ Returned when the input `cardNumber` is missing or malformed according to the Jo
 {
   "error": {
     "code": "INVALID_INPUT",
-    "message": "\"cardNumber\" is required"
+    "message": "Card number is required."
   }
 }
 ```
@@ -221,14 +229,13 @@ Returned for routes that do not exist.
 
 #### Failure Response (500 Internal Server Error)
 
-Returned for unexpected server errors. In production, the `stack` property will be omitted.
+Returned for unexpected server errors.
 
 ```json
 {
   "error": {
     "code": "INTERNAL_SERVER_ERROR",
-    "message": "An unexpected error occurred",
-    "stack": "..." // Only in non-production environments
+    "message": "An unexpected error occurred"
   }
 }
 ```
@@ -248,6 +255,6 @@ Returned for unexpected server errors. In production, the `stack` property will 
 
 The API employs a centralized error handling strategy:
 
-1.  **Joi Validation Errors:** Handled in the controller. If the request body fails schema validation, a `400 Bad Request` is returned with `code: "INVALID_INPUT"` and a descriptive message.
+1.  **Joi Validation Errors:** Handled by the `validateSchema(...)` middleware. If the request body fails schema validation, it forwards an error with `status = 400` and `code = "INVALID_INPUT"` to the global error middleware.
 2.  **404 Not Found:** A dedicated `notFoundMiddleware` catches requests to undefined routes, returning a `404 Not Found` with `code: "NOT_FOUND"`.
-3.  **Global Error Middleware:** A comprehensive `errorMiddleware` catches all other errors (both expected and unexpected). It standardizes the response format to include `code` and `message`. In non-production environments, it also includes the error `stack` for debugging purposes. This prevents sensitive internal details from leaking to clients in production.
+3.  **Global Error Middleware:** `errorMiddleware` catches all forwarded errors and standardizes the response format to include `code` and `message`. The current implementation does not include stack traces in responses.
