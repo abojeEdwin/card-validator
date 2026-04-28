@@ -17,7 +17,7 @@ describe('CardValidationService', () => {
     });
 
     it('should return isValid: "Valid" for a valid MasterCard number', () => {
-      const result: ValidationResult = service.validate('5000-0000-0000-0002');
+      const result: ValidationResult = service.validate('5234-5678-9157-8309');
       expect(result.isValid).toBe('Valid');
       expect(result.cardType).toBe('MasterCard');
       expect(result.validationDetails).toHaveLength(0);
