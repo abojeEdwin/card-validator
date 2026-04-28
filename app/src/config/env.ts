@@ -12,6 +12,6 @@ const getNumber = (name: string, fallback:any) => {
     }
 }
 
-module.exports = {
+export const env = {
     PORT : getNumber('PORT', 3000)
 }
