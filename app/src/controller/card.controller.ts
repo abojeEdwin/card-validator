@@ -1,27 +1,22 @@
-import { Request, Response } from 'express';
-import { validateCardSchema } from '../data/schemas/card.schema';
-import { CardValidationService } from '../service/cardValidation.service'; // Import the class
+import { Request, Response, NextFunction } from 'express';
+import { CardValidationService } from '../service/cardValidation.service';
 
-const cardValidationService = new CardValidationService(); // Instantiate the service
+const cardValidationService = new CardValidationService();
 
-export const validateCard = async (req: Request, res: Response) => {
-  const { error, value } = validateCardSchema.validate(req.body, { abortEarly: false });
 
-  if (error) {
-    return res.status(400).json({
-      error: {
-        code: 'INVALID_INPUT',
-        message: error.details.map((detail) => detail.message).join(', ')
-      }
+export const validateCard = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { cardNumber } = req.body;
+    const result = cardValidationService.validate(cardNumber);
+
+    return res.status(200).json({
+      isValid: result.isValid,
+      normalizedCardNumber: result.normalizedCardNumber,
+      cardType: result.cardType,
+      validationDetails: result.validationDetails
     });
+  } catch (err) {
+    next(err);
+    return;
   }
-
-  const { cardNumber } = value;
-  const result = cardValidationService.validate(cardNumber);
-
-  return res.status(200).json({
-    isValid: result.isValid,
-    normalizedCardNumber: result.normalizedCardNumber,
-    cardType: result.cardType
-  });
 };

@@ -14,6 +14,7 @@
   "license": "ISC",
   "description": "Card validation API service",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "joi": "^18.1.2"
   },

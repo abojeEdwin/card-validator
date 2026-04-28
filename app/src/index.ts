@@ -1,6 +1,7 @@
 import app from './app';
-const env : any = require('config/env')
-const PORT = env.PORT;
+//import {env} from "./config/env";
+
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
