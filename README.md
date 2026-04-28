@@ -246,10 +246,10 @@ Returned for unexpected server errors.
 -   **TypeScript:** Ensures type safety, improves code readability, and facilitates refactoring, crucial for a robust backend service. `strict: true` is enabled for maximum type-checking rigor.
 -   **Object-Oriented Service (`CardValidationService`):** Encapsulates all card validation and type detection logic within a class. This promotes reusability, testability, and separation of concerns, making the codebase easier to understand and maintain.
 -   **Joi for Request Validation:** Provides a powerful and declarative way to validate incoming request payloads, ensuring that the API receives well-formed data at the boundary.
--   **Custom Index-Based Luhn Algorithm:** The `passesLuhnCheck` implementation directly mirrors the provided Java logic, doubling digits at even indices (0-based from the left) and handling sums accordingly.
+-   **Custom Index-Based Luhn Algorithm:** The Luhn algorithm  being the industry standard adopted by most banks was my got to,it doubles digits at even indices (0-based from the left) and handling sums accordingly.
 -   **Detailed Validation Response:** The `validationDetails` array provides granular feedback on why a card number is considered invalid, enhancing the developer experience for API consumers.
 -   **Centralized Error Handling:** A global error middleware standardizes API error responses, ensuring consistency and preventing sensitive information (like stack traces) from being exposed in production.
--   **Node.js Test Runner / Jest:** Initially used Node.js's native test runner for minimal overhead, then switched to Jest for its comprehensive features, excellent developer experience, and broad community support, especially for mocking and detailed test reporting.
+-   **Node.js Test Runner/Jest:** Initially used Node.js's native test runner for minimal overhead, then switched to Jest for its comprehensive features, excellent developer experience, and broad community support, especially for mocking and detailed test reporting.
 
 ## Error Handling Strategy
 
