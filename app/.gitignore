@@ -1,2 +1,9 @@
 .env
 /node_modules
+dist/
+node_modules/
+coverage/
+*.log
+*.env
+*.local
+*.pem
